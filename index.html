@@ -61,6 +61,8 @@
           <button id="equipamentos-tab" class="tab-btn px-4 py-2 rounded-lg font-medium">Equipamentos</button>
           <button id="protocolos-tab" class="tab-btn px-4 py-2 rounded-lg font-medium">Protocolos</button>
           <button id="auditoria-tab" class="tab-btn px-4 py-2 rounded-lg font-medium">Trilha de Auditoria</button>
+          <!-- NOVO: AJUDA -->
+          <button id="ajuda-tab" class="tab-btn px-4 py-2 rounded-lg font-medium">Ajuda</button>
           <button id="logout-btn" class="ml-2 text-red-200 hover:text-white">Sair</button>
         </nav>
       </div>
@@ -133,7 +135,84 @@
         </div>
         <p class="text-xs text-gray-400 mt-3">Mostrando os 200 eventos mais recentes.</p>
       </section>
+
+      <!-- AJUDA / SOBRE (NOVO) -->
+      <section id="ajuda-section" class="section-content hidden">
+        <div class="mb-6">
+          <h2 class="text-2xl font-bold text-gray-800">Ajuda & Sobre o Sistema</h2>
+          <p class="text-gray-600 mt-2">Bem-vindo ao módulo de Gestão de Validação. Aqui você aprende o que o sistema faz e como utilizá-lo no dia a dia.</p>
+        </div>
+
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+          <!-- O que é -->
+          <div class="bg-white rounded-xl shadow-md p-6">
+            <h3 class="text-xl font-semibold text-gray-800">O que este sistema faz?</h3>
+            <ul class="mt-3 space-y-2 text-gray-700 list-disc pl-5">
+              <li><strong>Empresas:</strong> cadastro e visualização de clientes/empreendimentos.</li>
+              <li><strong>Equipamentos:</strong> vínculo de equipamentos às empresas, com TAG/Serial e modelo.</li>
+              <li><strong>Protocolos:</strong> criação de números formais (ex.: <code>PQI-1234-2025</code>) e descrição do escopo.</li>
+              <li><strong>Relatórios & Adendos:</strong> subitens numerados automaticamente por protocolo.</li>
+              <li><strong>Trilha de Auditoria:</strong> registro de acessos e operações para conformidade.</li>
+            </ul>
+          </div>
+
+          <!-- Como usar (passo a passo) -->
+          <div class="bg-white rounded-xl shadow-md p-6">
+            <h3 class="text-xl font-semibold text-gray-800">Como usar (passo a passo)</h3>
+            <ol class="mt-3 space-y-3 text-gray-700 list-decimal pl-5">
+              <li><strong>Faça login</strong> com seu e-mail e senha.</li>
+              <li>Acesse <strong>Empresas</strong> e clique em <em>Nova Empresa</em>.</li>
+              <li>Vá em <strong>Equipamentos</strong> &rarr; <em>Novo Equipamento</em> e selecione a empresa vinculada.</li>
+              <li>Abra <strong>Protocolos</strong> &rarr; <em>Novo Protocolo</em>, selecione o equipamento, escolha o tipo e clique em <em>Gerar Número</em>.</li>
+              <li>Após salvar, utilize <em>Novo Relatório</em> ou <em>Novo Adendo</em> dentro do cartão do protocolo.</li>
+              <li>Use <strong>Trilha de Auditoria</strong> para verificar atividades recentes.</li>
+            </ol>
+          </div>
+
+          <!-- Dicas rápidas -->
+          <div class="bg-white rounded-xl shadow-md p-6">
+            <h3 class="text-xl font-semibold text-gray-800">Dicas rápidas</h3>
+            <ul class="mt-3 space-y-2 text-gray-700 list-disc pl-5">
+              <li>Os números de <strong>Relatórios</strong> seguem <code>PROTOCOLO-REL-XXX</code> e os de <strong>Adendos</strong> seguem <code>PROTOCOLO-ADN-XXX</code>.</li>
+              <li>Use a tag (patrimônio/serial) para facilitar buscas e rastreabilidade.</li>
+              <li>Ao excluir uma empresa/equipamento, os vínculos não são apagados automaticamente: revise impactos antes.</li>
+              <li>O botão <em>Ver Relatórios/Adendos</em> expande a lista já com numeração gerada.</li>
+            </ul>
+          </div>
+
+          <!-- Perguntas frequentes -->
+          <div class="bg-white rounded-xl shadow-md p-6">
+            <h3 class="text-xl font-semibold text-gray-800">Perguntas frequentes</h3>
+            <div class="mt-3 space-y-3 text-gray-700">
+              <p><strong>Não consigo gerar número do protocolo?</strong><br/>Selecione o <em>Tipo</em> e clique em <em>Gerar Número</em> antes de salvar.</p>
+              <p><strong>Relatório/Adendo não aparece?</strong><br/>Clique em <em>Ver Relatórios/Adendos</em> no cartão do protocolo para atualizar a visualização.</p>
+              <p><strong>Onde vejo quem fez o quê?</strong><br/>Na <em>Trilha de Auditoria</em>, que mostra ação, usuário, data/hora e detalhes.</p>
+            </div>
+          </div>
+
+          <!-- Conformidade -->
+          <div class="bg-white rounded-xl shadow-md p-6 lg:col-span-2">
+            <h3 class="text-xl font-semibold text-gray-800">Boas práticas & Conformidade</h3>
+            <ul class="mt-3 space-y-2 text-gray-700 list-disc pl-5">
+              <li>Mantenha cadastros atualizados (CNPJ, contato, TAG, modelo).</li>
+              <li>Descreva protocolos e relatórios com informações objetivas e auditáveis.</li>
+              <li>Revise a trilha de auditoria periodicamente para conformidade e investigações.</li>
+              <li>Use contas individuais; não compartilhe senhas.</li>
+            </ul>
+          </div>
+        </div>
+      </section>
     </main>
+
+    <!-- RODAPÉ (NOVO) -->
+    <footer class="mt-10 border-t border-gray-200">
+      <div class="container mx-auto px-4 py-6 text-sm text-gray-500 flex flex-col md:flex-row items-center justify-between">
+        <p>© <span id="ano-footer"></span> Gestão de Validação — Todos os direitos reservados.</p>
+        <p class="mt-2 md:mt-0">
+          <span class="font-semibold tracking-wide">LJCOMPLIANCE</span>
+        </p>
+      </div>
+    </footer>
   </div>
 
   <!-- BACKDROP -->
@@ -392,6 +471,10 @@
     document.getElementById("protocolos-tab").addEventListener("click", () => { setActive("protocolos-section","protocolos-tab"); renderProtocolos(); });
     document.getElementById("auditoria-tab").addEventListener("click", () => { setActive("auditoria-section","auditoria-tab"); renderAuditoria(); });
     document.getElementById("refresh-auditoria").addEventListener("click", renderAuditoria);
+    // NOVO: aba Ajuda
+    document.getElementById("ajuda-tab").addEventListener("click", () => {
+      setActive("ajuda-section", "ajuda-tab");
+    });
 
     // ---- RENDER ALL (primeiro load) ----
     async function renderAll(){
@@ -936,6 +1019,9 @@
         return d.toLocaleDateString('pt-BR') + ' ' + d.toLocaleTimeString('pt-BR', {hour:'2-digit',minute:'2-digit',second:'2-digit'});
       }catch{ return '—'; }
     }
+
+    // NOVO: Atualiza ano do rodapé
+    document.getElementById('ano-footer').textContent = new Date().getFullYear();
   </script>
 </body>
 </html>
