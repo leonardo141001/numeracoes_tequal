@@ -1,0 +1,941 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Validação • Empresas, Equipamentos e Protocolos</title>
+
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            primary: '#2563eb',
+            secondary: '#1d4ed8',
+            accent: '#3b82f6',
+            dark: '#1e293b',
+            light: '#f8fafc'
+          }
+        }
+      }
+    }
+  </script>
+
+  <style>
+    .card{transition:transform .3s ease, box-shadow .3s ease}
+    .card:hover{transform:translateY(-5px); box-shadow:0 10px 25px -5px rgba(0,0,0,.1)}
+    .fade-in{animation:fadeIn .5s ease-in}
+    @keyframes fadeIn{from{opacity:0; transform:translateY(10px)} to{opacity:1; transform:translateY(0)}}
+    .slide-in{animation:slideIn .4s ease-out}
+    @keyframes slideIn{from{transform:translateX(20px); opacity:0} to{transform:translateX(0); opacity:1}}
+    .active{background:#1d4ed8; color:#fff}
+    .chip{font-size:.75rem; padding:.15rem .5rem; border-radius:999px}
+  </style>
+</head>
+<body class="bg-gray-50 min-h-screen">
+
+  <!-- TELA DE LOGIN -->
+  <div id="login-screen" class="flex items-center justify-center h-screen bg-gray-100">
+    <form id="login-form" class="bg-white p-8 rounded shadow-md w-80">
+      <h2 class="text-2xl font-bold mb-4 text-center">Login</h2>
+      <input type="email" id="login-email" placeholder="Email" required class="w-full p-2 border mb-4 rounded"/>
+      <input type="password" id="login-senha" placeholder="Senha" required class="w-full p-2 border mb-4 rounded"/>
+      <button type="submit" class="w-full bg-blue-600 text-white p-2 rounded">Entrar</button>
+    </form>
+  </div>
+
+  <!-- APP (fica oculto até logar) -->
+  <div class="main-app hidden">
+    <!-- Header -->
+    <header class="bg-gradient-to-r from-primary to-secondary text-white shadow-lg">
+      <div class="container mx-auto px-4 py-6 flex flex-col md:flex-row justify-between items-center">
+        <div class="flex items-center mb-4 md:mb-0">
+          <i class="fas fa-file-contract text-3xl mr-3"></i>
+          <h1 class="text-2xl font-bold">Gestão de Validação</h1>
+        </div>
+        <nav class="flex flex-wrap gap-2">
+          <button id="empresas-tab" class="tab-btn active px-4 py-2 rounded-lg font-medium">Empresas</button>
+          <button id="equipamentos-tab" class="tab-btn px-4 py-2 rounded-lg font-medium">Equipamentos</button>
+          <button id="protocolos-tab" class="tab-btn px-4 py-2 rounded-lg font-medium">Protocolos</button>
+          <button id="auditoria-tab" class="tab-btn px-4 py-2 rounded-lg font-medium">Trilha de Auditoria</button>
+          <button id="logout-btn" class="ml-2 text-red-200 hover:text-white">Sair</button>
+        </nav>
+      </div>
+    </header>
+
+    <main class="container mx-auto px-4 py-8">
+      <!-- EMPRESAS -->
+      <section id="empresas-section" class="section-content">
+        <div class="flex justify-between items-center mb-6">
+          <h2 class="text-2xl font-bold text-gray-800">Empresas</h2>
+          <button id="add-empresa-btn" class="bg-primary hover:bg-secondary text-white px-4 py-2 rounded-lg flex items-center">
+            <i class="fas fa-plus mr-2"></i> Nova Empresa
+          </button>
+        </div>
+        <div id="empresas-container" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6"></div>
+      </section>
+
+      <!-- EQUIPAMENTOS -->
+      <section id="equipamentos-section" class="section-content hidden">
+        <div class="flex justify-between items-center mb-6">
+          <h2 class="text-2xl font-bold text-gray-800">Equipamentos</h2>
+          <button id="add-equipamento-btn" class="bg-primary hover:bg-secondary text-white px-4 py-2 rounded-lg flex items-center">
+            <i class="fas fa-plus mr-2"></i> Novo Equipamento
+          </button>
+        </div>
+        <div id="equipamentos-container" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6"></div>
+      </section>
+
+      <!-- PROTOCOLOS -->
+      <section id="protocolos-section" class="section-content hidden">
+        <div class="flex justify-between items-center mb-6">
+          <h2 class="text-2xl font-bold text-gray-800">Protocolos</h2>
+          <button id="add-protocolo-btn" class="bg-primary hover:bg-secondary text-white px-4 py-2 rounded-lg flex items-center">
+            <i class="fas fa-plus mr-2"></i> Novo Protocolo
+          </button>
+        </div>
+        <div id="protocolos-container" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6"></div>
+      </section>
+
+      <!-- AUDITORIA -->
+      <section id="auditoria-section" class="section-content hidden">
+        <div class="flex items-center justify-between mb-6">
+          <h2 class="text-2xl font-bold text-gray-800">Trilha de Auditoria</h2>
+          <div class="flex items-center gap-2">
+            <button id="refresh-auditoria" class="px-3 py-2 rounded bg-gray-200 hover:bg-gray-300 text-gray-800"><i class="fa-solid fa-rotate"></i> Atualizar</button>
+          </div>
+        </div>
+
+        <div class="bg-white rounded-xl shadow-md overflow-hidden">
+          <div class="overflow-x-auto">
+            <table class="min-w-full text-sm">
+              <thead class="bg-gray-50 text-gray-700">
+                <tr>
+                  <th class="px-4 py-3 text-left">Data/Hora</th>
+                  <th class="px-4 py-3 text-left">Usuário</th>
+                  <th class="px-4 py-3 text-left">Ação</th>
+                  <th class="px-4 py-3 text-left">Tipo</th>
+                  <th class="px-4 py-3 text-left">Referência</th>
+                  <th class="px-4 py-3 text-left">Detalhes</th>
+                </tr>
+              </thead>
+              <tbody id="auditoria-tbody" class="divide-y divide-gray-100">
+                <!-- linhas dinamicamente -->
+              </tbody>
+            </table>
+          </div>
+          <div id="auditoria-empty" class="p-8 hidden text-center text-gray-500">
+            Nenhum evento de auditoria registrado ainda.
+          </div>
+        </div>
+        <p class="text-xs text-gray-400 mt-3">Mostrando os 200 eventos mais recentes.</p>
+      </section>
+    </main>
+  </div>
+
+  <!-- BACKDROP -->
+  <div id="modal-backdrop" class="fixed inset-0 bg-black bg-opacity-50 hidden z-40"></div>
+
+  <!-- MODAL: EMPRESA -->
+  <div id="add-empresa-modal" class="fixed top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 bg-white rounded-xl shadow-2xl p-6 w-11/12 max-w-md z-50 hidden slide-in">
+    <div class="flex justify-between items-center mb-4">
+      <h3 class="text-xl font-bold text-gray-800">Nova Empresa</h3>
+      <button id="close-empresa-modal" class="text-gray-500 hover:text-gray-700"><i class="fas fa-times"></i></button>
+    </div>
+    <form id="empresa-form">
+      <div class="mb-4">
+        <label class="block text-gray-700 mb-2" for="empresa-nome">Nome</label>
+        <input type="text" id="empresa-nome" class="w-full px-3 py-2 border rounded-lg" required>
+      </div>
+      <div class="mb-4">
+        <label class="block text-gray-700 mb-2" for="empresa-cnpj">CNPJ</label>
+        <input type="text" id="empresa-cnpj" class="w-full px-3 py-2 border rounded-lg" placeholder="00.000.000/0000-00">
+      </div>
+      <div class="mb-4">
+        <label class="block text-gray-700 mb-2" for="empresa-contato">Contato</label>
+        <input type="text" id="empresa-contato" class="w-full px-3 py-2 border rounded-lg">
+      </div>
+      <div class="flex justify-end space-x-3">
+        <button type="button" id="cancel-empresa-btn" class="px-4 py-2 text-gray-600">Cancelar</button>
+        <button type="submit" class="bg-primary hover:bg-secondary text-white px-4 py-2 rounded-lg">Salvar</button>
+      </div>
+    </form>
+  </div>
+
+  <!-- MODAL: EQUIPAMENTO -->
+  <div id="add-equipamento-modal" class="fixed top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 bg-white rounded-xl shadow-2xl p-6 w-11/12 max-w-md z-50 hidden slide-in">
+    <div class="flex justify-between items-center mb-4">
+      <h3 class="text-xl font-bold text-gray-800">Novo Equipamento</h3>
+      <button id="close-equipamento-modal" class="text-gray-500 hover:text-gray-700"><i class="fas fa-times"></i></button>
+    </div>
+    <form id="equipamento-form">
+      <div class="mb-4">
+        <label class="block text-gray-700 mb-2" for="equipamento-nome">Nome do Equipamento</label>
+        <input id="equipamento-nome" class="w-full px-3 py-2 border rounded-lg" required/>
+      </div>
+      <div class="mb-4">
+        <label class="block text-gray-700 mb-2" for="equipamento-empresa">Empresa</label>
+        <select id="equipamento-empresa" class="w-full px-3 py-2 border rounded-lg" required>
+          <option value="">Selecione uma empresa</option>
+        </select>
+      </div>
+
+      <!-- NOVOS CAMPOS: TAG e MODELO -->
+      <div class="mb-4">
+        <label class="block text-gray-700 mb-2" for="equipamento-tag">Tag (Patrimônio/Serial)</label>
+        <input id="equipamento-tag" class="w-full px-3 py-2 border rounded-lg" placeholder="Ex.: EQP-00123"/>
+      </div>
+      <div class="mb-4">
+        <label class="block text-gray-700 mb-2" for="equipamento-modelo">Modelo</label>
+        <input id="equipamento-modelo" class="w-full px-3 py-2 border rounded-lg" placeholder="Ex.: Thermo XYZ-200"/>
+      </div>
+
+      <div class="mb-4">
+        <label class="block text-gray-700 mb-2" for="equipamento-descricao">Descrição</label>
+        <textarea id="equipamento-descricao" rows="3" class="w-full px-3 py-2 border rounded-lg"></textarea>
+      </div>
+      <div class="flex justify-end space-x-3">
+        <button type="button" id="cancel-equipamento-btn" class="px-4 py-2 text-gray-600">Cancelar</button>
+        <button type="submit" class="bg-primary hover:bg-secondary text-white px-4 py-2 rounded-lg">Salvar</button>
+      </div>
+    </form>
+  </div>
+
+  <!-- MODAL: PROTOCOLO -->
+  <div id="add-protocolo-modal" class="fixed top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 bg-white rounded-xl shadow-2xl p-6 w-11/12 max-w-md z-50 hidden slide-in">
+    <div class="flex justify-between items-center mb-4">
+      <h3 class="text-xl font-bold text-gray-800">Novo Protocolo</h3>
+      <button id="close-protocolo-modal" class="text-gray-500 hover:text-gray-700"><i class="fas fa-times"></i></button>
+    </div>
+    <form id="protocolo-form">
+      <div class="mb-4">
+        <label class="block text-gray-700 mb-2" for="protocolo-tipo">Tipo</label>
+        <select id="protocolo-tipo" class="w-full px-3 py-2 border rounded-lg" required>
+          <option value="">Selecione</option>
+          <option value="PQI">PQI</option>
+          <option value="PQO">PQO</option>
+          <option value="PQD">PQD</option>
+          <option value="PLV">PLV</option>
+          <option value="MRT">MRT</option>
+          <option value="OUTRO">OUTRO</option>
+        </select>
+      </div>
+
+      <!-- NOVO: filtro por empresa -->
+      <div class="mb-4">
+        <label class="block text-gray-700 mb-2" for="protocolo-empresa">Empresa</label>
+        <select id="protocolo-empresa" class="w-full px-3 py-2 border rounded-lg">
+          <option value="">Todas as empresas</option>
+        </select>
+      </div>
+
+      <div class="mb-4">
+        <label class="block text-gray-700 mb-2" for="protocolo-equipamento">Equipamento</label>
+        <select id="protocolo-equipamento" class="w-full px-3 py-2 border rounded-lg" required>
+          <option value="">Selecione um equipamento</option>
+        </select>
+      </div>
+
+      <div class="mb-4">
+        <label class="block text-gray-700 mb-2">Número</label>
+        <div class="flex">
+          <input id="protocolo-prefixo" class="w-1/3 px-3 py-2 border rounded-l-lg bg-gray-100" readonly>
+          <input id="protocolo-hash" class="w-1/3 px-3 py-2 border-t border-b bg-gray-100" readonly>
+          <input id="protocolo-ano" class="w-1/3 px-3 py-2 border rounded-r-lg bg-gray-100" readonly>
+        </div>
+        <button type="button" id="gerar-protocolo-btn" class="mt-2 w-full bg-accent hover:bg-primary text-white px-3 py-2 rounded-lg">Gerar Número</button>
+        <p class="text-sm text-gray-500 mt-1">Formato: TIPO-XXXX-AAAA</p>
+      </div>
+
+      <div class="mb-4">
+        <label class="block text-gray-700 mb-2" for="protocolo-descricao">Descrição</label>
+        <textarea id="protocolo-descricao" rows="3" class="w-full px-3 py-2 border rounded-lg"></textarea>
+      </div>
+      <div class="flex justify-end space-x-3">
+        <button type="button" id="cancel-protocolo-btn" class="px-4 py-2 text-gray-600">Cancelar</button>
+        <button type="submit" class="bg-primary hover:bg-secondary text-white px-4 py-2 rounded-lg">Salvar</button>
+      </div>
+    </form>
+  </div>
+
+  <!-- MODAL: RELATÓRIO (subcoleção) -->
+  <div id="add-relatorio-modal" class="fixed top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 bg-white rounded-xl shadow-2xl p-6 w-11/12 max-w-md z-50 hidden slide-in">
+    <div class="flex justify-between items-center mb-4">
+      <h3 class="text-xl font-bold text-gray-800">Novo Relatório</h3>
+      <button id="close-relatorio-modal" class="text-gray-500 hover:text-gray-700"><i class="fas fa-times"></i></button>
+    </div>
+    <form id="relatorio-form">
+      <input type="hidden" id="relatorio-protocolo-id">
+      <div class="mb-4">
+        <label class="block text-gray-700 mb-2" for="relatorio-titulo">Título</label>
+        <input id="relatorio-titulo" class="w-full px-3 py-2 border rounded-lg" required/>
+      </div>
+      <div class="mb-4">
+        <label class="block text-gray-700 mb-2" for="relatorio-conteudo">Conteúdo</label>
+        <textarea id="relatorio-conteudo" rows="5" class="w-full px-3 py-2 border rounded-lg" required></textarea>
+      </div>
+      <div class="flex justify-end space-x-3">
+        <button type="button" id="cancel-relatorio-btn" class="px-4 py-2 text-gray-600">Cancelar</button>
+        <button type="submit" class="bg-primary hover:bg-secondary text-white px-4 py-2 rounded-lg">Salvar</button>
+      </div>
+    </form>
+  </div>
+
+  <!-- MODAL: ADENDO (subcoleção) -->
+  <div id="add-adendo-modal" class="fixed top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 bg-white rounded-xl shadow-2xl p-6 w-11/12 max-w-md z-50 hidden slide-in">
+    <div class="flex justify-between items-center mb-4">
+      <h3 class="text-xl font-bold text-gray-800">Novo Adendo</h3>
+      <button id="close-adendo-modal" class="text-gray-500 hover:text-gray-700"><i class="fas fa-times"></i></button>
+    </div>
+    <form id="adendo-form">
+      <input type="hidden" id="adendo-protocolo-id">
+      <div class="mb-4">
+        <label class="block text-gray-700 mb-2" for="adendo-titulo">Título</label>
+        <input id="adendo-titulo" class="w-full px-3 py-2 border rounded-lg" required/>
+      </div>
+      <div class="mb-4">
+        <label class="block text-gray-700 mb-2" for="adendo-conteudo">Conteúdo</label>
+        <textarea id="adendo-conteudo" rows="5" class="w-full px-3 py-2 border rounded-lg" required></textarea>
+      </div>
+      <div class="flex justify-end space-x-3">
+        <button type="button" id="cancel-adendo-btn" class="px-4 py-2 text-gray-600">Cancelar</button>
+        <button type="submit" class="bg-primary hover:bg-secondary text-white px-4 py-2 rounded-lg">Salvar</button>
+      </div>
+    </form>
+  </div>
+
+  <!-- Firebase + App -->
+  <script type="module" src="conect.js"></script>
+
+  <script type="module">
+    import { getAuth, onAuthStateChanged, signInWithEmailAndPassword, signOut } from "https://www.gstatic.com/firebasejs/11.10.0/firebase-auth.js";
+    import { db } from './conect.js';
+    import {
+      collection, addDoc, getDocs, getDoc, doc, deleteDoc,
+      orderBy, limit, query
+    } from "https://www.gstatic.com/firebasejs/11.10.0/firebase-firestore.js";
+
+    // ---- LOGIN ----
+    const auth = getAuth();
+    const appContent = document.querySelector(".main-app");
+    const loginScreen = document.getElementById("login-screen");
+    let accessLoggedThisLoad = false;
+
+    onAuthStateChanged(auth, async (user) => {
+      if (user) {
+        loginScreen.classList.add("hidden");
+        appContent.classList.remove("hidden");
+        if (!accessLoggedThisLoad) {
+          accessLoggedThisLoad = true;
+          await logAudit('access', 'sistema', null, 'Sessão iniciada/recarregada');
+        }
+        renderAll();
+      } else {
+        loginScreen.classList.remove("hidden");
+        appContent.classList.add("hidden");
+      }
+    });
+
+    document.getElementById("login-form").addEventListener("submit", async (e) => {
+      e.preventDefault();
+      const email = document.getElementById("login-email").value.trim();
+      const senha = document.getElementById("login-senha").value;
+      try {
+        await signInWithEmailAndPassword(auth, email, senha);
+        await logAudit('login', 'sistema', null, 'Login bem-sucedido');
+        alert("Login realizado!");
+      } catch (err) {
+        alert("Erro ao fazer login: " + err.message);
+      }
+    });
+
+    document.getElementById("logout-btn").addEventListener("click", async () => {
+      const email = auth.currentUser?.email || '';
+      await logAudit('logout', 'sistema', null, `Logout: ${email}`);
+      await signOut(auth);
+      alert("Logout realizado.");
+    });
+
+    // ---- ELEMENTOS/REFS ----
+    const empresasContainer = document.getElementById('empresas-container');
+    const equipamentosContainer = document.getElementById('equipamentos-container');
+    const protocolosContainer = document.getElementById('protocolos-container');
+
+    const empresaForm = document.getElementById('empresa-form');
+    const equipamentoForm = document.getElementById('equipamento-form');
+    const equipamentoEmpresaSelect = document.getElementById('equipamento-empresa');
+    const protocoloForm = document.getElementById('protocolo-form');
+    const protocoloEquipamentoSelect = document.getElementById('protocolo-equipamento');
+    const protocoloEmpresaSelect    = document.getElementById('protocolo-empresa');
+
+    // Auditoria UI
+    const auditoriaTbody = document.getElementById('auditoria-tbody');
+    const auditoriaEmpty = document.getElementById('auditoria-empty');
+
+    // ---- HELPERS MODAL ----
+    const backdrop = document.getElementById("modal-backdrop");
+    const openModal = (id) => { document.getElementById(id).classList.remove("hidden"); backdrop.classList.remove("hidden"); }
+    const closeModal = (id) => { document.getElementById(id).classList.add("hidden"); backdrop.classList.add("hidden"); }
+
+    // ---- TABS ----
+    function setActive(sectionId, tabId){
+      document.querySelectorAll(".section-content").forEach(s => s.classList.add("hidden"));
+      document.getElementById(sectionId).classList.remove("hidden");
+      document.querySelectorAll(".tab-btn").forEach(b => b.classList.remove("active"));
+      document.getElementById(tabId).classList.add("active");
+    }
+    document.getElementById("empresas-tab").addEventListener("click", () => { setActive("empresas-section","empresas-tab"); renderEmpresas(); });
+    document.getElementById("equipamentos-tab").addEventListener("click", () => { setActive("equipamentos-section","equipamentos-tab"); renderEquipamentos(); });
+    document.getElementById("protocolos-tab").addEventListener("click", () => { setActive("protocolos-section","protocolos-tab"); renderProtocolos(); });
+    document.getElementById("auditoria-tab").addEventListener("click", () => { setActive("auditoria-section","auditoria-tab"); renderAuditoria(); });
+    document.getElementById("refresh-auditoria").addEventListener("click", renderAuditoria);
+
+    // ---- RENDER ALL (primeiro load) ----
+    async function renderAll(){
+      await renderEmpresas();
+      await populateEmpresasDropdown();
+      await renderEquipamentos();
+      await renderProtocolos();
+    }
+
+    // =========================
+    // AUDITORIA (funções)
+    // =========================
+    async function logAudit(acao, tipo, refId = null, detalhes = ''){
+      try{
+        const user = auth.currentUser;
+        const userEmail = user?.email || 'anônimo';
+        const userId = user?.uid || null;
+        await addDoc(collection(db, "auditoria"), {
+          acao, tipo, refId, detalhes, userEmail, userId, criadoEm: new Date()
+        });
+      }catch(e){
+        console.warn("Falha ao registrar auditoria:", e);
+      }
+    }
+
+    async function renderAuditoria(){
+      auditoriaTbody.innerHTML = '';
+      const q = query(collection(db, "auditoria"), orderBy("criadoEm", "desc"), limit(200));
+      const snap = await getDocs(q);
+
+      if (snap.empty){
+        auditoriaEmpty.classList.remove('hidden');
+        return;
+      }
+      auditoriaEmpty.classList.add('hidden');
+
+      snap.forEach(d=>{
+        const a = d.data();
+        const tr = document.createElement('tr');
+        tr.className = "hover:bg-gray-50";
+        tr.innerHTML = `
+          <td class="px-4 py-3 whitespace-nowrap text-gray-700">${formatDateTime(a.criadoEm)}</td>
+          <td class="px-4 py-3 whitespace-nowrap">
+            <span class="chip bg-gray-100 text-gray-700">${a.userEmail || '—'}</span>
+          </td>
+          <td class="px-4 py-3 whitespace-nowrap">
+            <span class="chip bg-blue-100 text-blue-800">${a.acao}</span>
+          </td>
+          <td class="px-4 py-3 whitespace-nowrap">
+            <span class="chip bg-emerald-100 text-emerald-800">${a.tipo || '—'}</span>
+          </td>
+          <td class="px-4 py-3">${a.refId || '—'}</td>
+          <td class="px-4 py-3 text-gray-700">${a.detalhes || ''}</td>
+        `;
+        auditoriaTbody.appendChild(tr);
+      });
+    }
+
+    // =========================
+    // EMPRESAS
+    // =========================
+    async function renderEmpresas(){
+      empresasContainer.innerHTML = '';
+      const empSnap = await getDocs(collection(db, "empresas"));
+      if (empSnap.empty){
+        empresasContainer.innerHTML = emptyState("Nenhuma empresa cadastrada", "fa-building");
+        return;
+      }
+      const eqSnap = await getDocs(collection(db, "equipamentos"));
+      const countPorEmpresa = {};
+      eqSnap.forEach(s => {
+        const e = s.data();
+        countPorEmpresa[e.empresaId] = (countPorEmpresa[e.empresaId]||0) + 1;
+      });
+
+      empSnap.forEach(docSnap=>{
+        const e = docSnap.data();
+        const empresaId = docSnap.id;
+        const sistemasCount = countPorEmpresa[empresaId] || 0;
+
+        const card = document.createElement('div');
+        card.className = 'card bg-white rounded-xl shadow-md overflow-hidden fade-in';
+        card.innerHTML = `
+          <div class="p-6">
+            <div class="flex justify-between items-start">
+              <div>
+                <h3 class="text-xl font-bold text-gray-800">${e.nome}</h3>
+                <p class="text-gray-600 text-sm mt-1">${e.cnpj || ''}</p>
+                <p class="text-gray-500 text-sm mt-1">⚙️ ${sistemasCount} equipamento(s)</p>
+              </div>
+              <button class="text-gray-400 hover:text-red-500 delete-empresa" data-id="${empresaId}">
+                <i class="fas fa-trash"></i>
+              </button>
+            </div>
+            <div class="mt-4 text-gray-700">${e.contato || ''}</div>
+            <div class="mt-4 text-right">
+              <button class="ver-equipamentos-btn bg-blue-500 text-white px-3 py-1 rounded hover:bg-blue-600 transition text-sm" data-id="${empresaId}">
+                Ver Equipamentos
+              </button>
+            </div>
+          </div>
+        `;
+        empresasContainer.appendChild(card);
+
+        card.querySelector('.delete-empresa').addEventListener('click', async ()=>{
+          if (confirm("Excluir empresa? Isso não remove equipamentos ligados automaticamente.")){
+            await deleteDoc(doc(db, "empresas", empresaId));
+            await logAudit('delete', 'empresa', empresaId, `Empresa excluída: ${e.nome || ''}`);
+            renderEmpresas(); populateEmpresasDropdown();
+          }
+        });
+
+        card.querySelector('.ver-equipamentos-btn').addEventListener('click', async ()=>{
+          setActive("equipamentos-section","equipamentos-tab");
+          await renderEquipamentos(empresaId);
+        });
+      });
+    }
+
+    async function populateEmpresasDropdown(){
+      equipamentoEmpresaSelect.innerHTML = '<option value="">Selecione uma empresa</option>';
+      const snap = await getDocs(collection(db, "empresas"));
+      snap.forEach(d=>{
+        const o = document.createElement('option');
+        o.value = d.id; o.textContent = d.data().nome;
+        equipamentoEmpresaSelect.appendChild(o);
+      });
+    }
+
+    // =========================
+    // EQUIPAMENTOS
+    // =========================
+    async function renderEquipamentos(filtroEmpresaId=null){
+      equipamentosContainer.innerHTML = '';
+      const eqSnap = await getDocs(collection(db, "equipamentos"));
+      if (eqSnap.empty){
+        equipamentosContainer.innerHTML = emptyState("Nenhum equipamento cadastrado", "fa-laptop-code");
+        return;
+      }
+
+      const empSnap = await getDocs(collection(db, "empresas"));
+      const empMap = {};
+      empSnap.forEach(e => empMap[e.id] = e.data());
+
+      const protSnap = await getDocs(collection(db, "protocolos"));
+      const protCount = {};
+      protSnap.forEach(p=>{
+        const v=p.data();
+        protCount[v.equipamentoId]=(protCount[v.equipamentoId]||0)+1;
+      });
+
+      eqSnap.forEach(d=>{
+        const eq=d.data(); const eqId=d.id;
+        if (filtroEmpresaId && eq.empresaId !== filtroEmpresaId) return;
+
+        const card=document.createElement('div');
+        card.className='card bg-white rounded-xl shadow-md p-6 fade-in';
+        card.innerHTML = `
+          <div class="flex justify-between items-start">
+            <div>
+              <h3 class="text-xl font-bold text-gray-800">${eq.nome}</h3>
+              <p class="text-gray-500 text-sm">${empMap[eq.empresaId]?.nome || 'Empresa não encontrada'}</p>
+              <div class="flex flex-wrap gap-2 mt-2">
+                ${eq.modelo ? `<span class="chip bg-gray-100 text-gray-700">Modelo: ${eq.modelo}</span>` : ''}
+                ${eq.tag    ? `<span class="chip bg-indigo-100 text-indigo-700">TAG: ${eq.tag}</span>` : ''}
+              </div>
+            </div>
+            <button class="text-gray-400 hover:text-red-500 delete-equipamento" data-id="${eqId}">
+              <i class="fas fa-trash"></i>
+            </button>
+          </div>
+          <p class="text-gray-700 mt-4">${eq.descricao || ''}</p>
+          <div class="mt-6 flex justify-between items-center">
+            <span class="text-xs bg-green-100 text-green-800 font-semibold px-3 py-1 rounded-full">
+              ${(protCount[eqId]||0)} protocolo(s)
+            </span>
+            <a href="#" class="ver-protocolos-link text-blue-600 hover:underline text-sm flex items-center gap-1" data-id="${eqId}">
+              Ver protocolos <i class="fas fa-arrow-right"></i>
+            </a>
+          </div>
+        `;
+        equipamentosContainer.appendChild(card);
+
+        card.querySelector('.delete-equipamento').addEventListener('click', async ()=>{
+          if (confirm("Excluir equipamento? Isso não remove protocolos ligados automaticamente.")){
+            await deleteDoc(doc(db, "equipamentos", eqId));
+            await logAudit('delete', 'equipamento', eqId, `Equipamento excluído: ${eq.nome || ''}`);
+            renderEquipamentos(filtroEmpresaId);
+          }
+        });
+
+        card.querySelector('.ver-protocolos-link').addEventListener('click', async (e)=>{
+          e.preventDefault();
+          setActive("protocolos-section","protocolos-tab");
+          await renderProtocolos(eqId);
+        });
+      });
+    }
+
+    // =========================
+    // PROTOCOLOS (+ subcoleções)
+    // =========================
+    async function renderProtocolos(filtroEquipamentoId=null){
+      protocolosContainer.innerHTML = '';
+      const pSnap = await getDocs(collection(db, "protocolos"));
+      if (pSnap.empty){
+        protocolosContainer.innerHTML = emptyState("Nenhum protocolo cadastrado", "fa-file-alt");
+        return;
+      }
+
+      const eqSnap = await getDocs(collection(db, "equipamentos"));
+      const eqMap = {};
+      eqSnap.forEach(e => eqMap[e.id] = e.data());
+
+      pSnap.forEach(d=>{
+        const p = d.data(); const pId = d.id;
+        if (filtroEquipamentoId && p.equipamentoId !== filtroEquipamentoId) return;
+
+        const numero = p.numero || `${p.tipo || 'TIPO'}-????-${new Date().getFullYear()}`;
+        const card = document.createElement('div');
+        card.className = "bg-white rounded-xl shadow-md p-6 fade-in";
+        card.innerHTML = `
+          <div class="flex justify-between items-start">
+            <span class="text-white bg-blue-600 text-xs font-semibold px-3 py-1 rounded-full">${p.tipo || 'PROTOCOLO'}</span>
+            <button class="text-gray-400 hover:text-red-500 delete-protocolo" data-id="${pId}">
+              <i class="fas fa-trash"></i>
+            </button>
+          </div>
+          <h3 class="text-xl font-bold text-gray-800 mt-2">${numero}</h3>
+          <p class="text-sm text-gray-600 mt-1">${eqMap[p.equipamentoId]?.nome || 'Equipamento não encontrado'}</p>
+          <p class="text-gray-700 mt-4">${p.descricao || ''}</p>
+
+          <div class="mt-5 flex flex-wrap gap-2">
+            <button class="abrir-relatorio bg-emerald-600 hover:bg-emerald-700 text-white px-3 py-1 rounded" data-id="${pId}">
+              <i class="fa-solid fa-file-lines mr-1"></i> Novo Relatório
+            </button>
+            <button class="abrir-adendo bg-amber-600 hover:bg-amber-700 text-white px-3 py-1 rounded" data-id="${pId}">
+              <i class="fa-solid fa-note-sticky mr-1"></i> Novo Adendo
+            </button>
+            <button class="ver-itens bg-gray-200 hover:bg-gray-300 text-gray-800 px-3 py-1 rounded" data-id="${pId}">
+              Ver Relatórios/Adendos
+            </button>
+          </div>
+
+          <div class="mt-4 hidden" id="itens-${pId}">
+            <p class="text-sm text-gray-500">Carregando itens...</p>
+          </div>
+
+          <p class="text-sm text-gray-500 mt-6 flex items-center">
+            <i class="fas fa-calendar-alt mr-1"></i> Cadastrado em: ${formatDate(p.criadoEm)}
+          </p>
+        `;
+        protocolosContainer.appendChild(card);
+
+        card.querySelector('.delete-protocolo').addEventListener('click', async ()=>{
+          if (confirm("Excluir protocolo? (Relatórios e adendos não serão removidos automaticamente)")){
+            await deleteDoc(doc(db, "protocolos", pId));
+            await logAudit('delete', 'protocolo', pId, `Protocolo excluído: ${numero}`);
+            renderProtocolos(filtroEquipamentoId);
+          }
+        });
+
+        card.querySelector('.abrir-relatorio').addEventListener('click', ()=>{
+          document.getElementById('relatorio-form').reset();
+          document.getElementById('relatorio-protocolo-id').value = pId;
+          openModal('add-relatorio-modal');
+        });
+
+        card.querySelector('.abrir-adendo').addEventListener('click', ()=>{
+          document.getElementById('adendo-form').reset();
+          document.getElementById('adendo-protocolo-id').value = pId;
+          openModal('add-adendo-modal');
+        });
+
+        card.querySelector('.ver-itens').addEventListener('click', async ()=>{
+          const box = document.getElementById(`itens-${pId}`);
+          if (!box.classList.contains('hidden')) { box.classList.add('hidden'); box.innerHTML = ''; return; }
+          box.classList.remove('hidden');
+          box.innerHTML = await renderItensProtocolo(pId);
+        });
+      });
+    }
+
+    // Renderiza lista de relatórios/adendos com NUMERAÇÃO exibida
+    async function renderItensProtocolo(protocoloId){
+      const relsSnap = await getDocs(collection(db, "protocolos", protocoloId, "relatorios"));
+      const adSnap  = await getDocs(collection(db, "protocolos", protocoloId, "adendos"));
+
+      if (relsSnap.empty && adSnap.empty){
+        return `<div class="p-3 bg-gray-50 rounded text-sm text-gray-600">Nenhum relatório ou adendo.</div>`;
+      }
+
+      let html = '';
+      if (!relsSnap.empty){
+        html += `<div class="mb-3"><h4 class="font-semibold mb-2">Relatórios</h4>`;
+        relsSnap.forEach(r=>{
+          const d=r.data();
+          html += `
+            <div class="border rounded p-3 mb-2">
+              <div class="flex items-center justify-between">
+                <div class="font-medium">${d.numero ? d.numero + " • " : ""}${d.titulo}</div>
+                <span class="text-xs bg-blue-100 text-blue-800 font-semibold px-2 py-0.5 rounded">${d.numero || '—'}</span>
+              </div>
+              <div class="text-sm text-gray-700 whitespace-pre-wrap mt-2">${(d.conteudo||'')}</div>
+              <div class="text-xs text-gray-500 mt-2"><i class="fa-regular fa-clock mr-1"></i>${formatDate(d.criadoEm)}</div>
+            </div>`;
+        });
+        html += `</div>`;
+      }
+
+      if (!adSnap.empty){
+        html += `<div class="mb-1"><h4 class="font-semibold mb-2">Adendos</h4>`;
+        adSnap.forEach(a=>{
+          const d=a.data();
+          html += `
+            <div class="border rounded p-3 mb-2">
+              <div class="flex items-center justify-between">
+                <div class="font-medium">${d.numero ? d.numero + " • " : ""}${d.titulo}</div>
+                <span class="text-xs bg-violet-100 text-violet-800 font-semibold px-2 py-0.5 rounded">${d.numero || '—'}</span>
+              </div>
+              <div class="text-sm text-gray-700 whitespace-pre-wrap mt-2">${(d.conteudo||'')}</div>
+              <div class="text-xs text-gray-500 mt-2"><i class="fa-regular fa-clock mr-1"></i>${formatDate(d.criadoEm)}</div>
+            </div>`;
+        });
+        html += `</div>`;
+      }
+
+      return html;
+    }
+
+    // =========================
+    // LISTAS PARA O MODAL DE PROTOCOLO (EMPRESA + EQUIPAMENTOS)
+    // =========================
+    async function populateEmpresasForProtocolo() {
+      protocoloEmpresaSelect.innerHTML = '<option value="">Todas as empresas</option>';
+      const empSnap = await getDocs(collection(db, "empresas"));
+      empSnap.forEach(docSnap => {
+        const opt = document.createElement('option');
+        opt.value = docSnap.id;
+        opt.textContent = docSnap.data().nome || '(sem nome)';
+        protocoloEmpresaSelect.appendChild(opt);
+      });
+    }
+
+    async function populateEquipamentosForProtocolo(empresaId = null) {
+      protocoloEquipamentoSelect.innerHTML = '<option value="">Selecione um equipamento</option>';
+
+      // map das empresas para mostrar "Equipamento — Empresa"
+      const empSnap = await getDocs(collection(db, "empresas"));
+      const empMap = {};
+      empSnap.forEach(e => empMap[e.id] = e.data()?.nome || '(sem nome)');
+
+      const eqSnap = await getDocs(collection(db, "equipamentos"));
+      eqSnap.forEach(docSnap => {
+        const e = docSnap.data();
+        if (empresaId && e.empresaId !== empresaId) return;
+
+        const opt = document.createElement('option');
+        const empresaNome = empMap[e.empresaId] || 'Empresa desconhecida';
+        const modeloTxt = e.modelo ? ` (${e.modelo})` : '';
+        const tagTxt    = e.tag ? ` • TAG: ${e.tag}` : '';
+        opt.value = docSnap.id;
+        opt.textContent = `${e.nome || '(sem nome)'}${modeloTxt} — ${empresaNome}${tagTxt}`;
+        protocoloEquipamentoSelect.appendChild(opt);
+      });
+    }
+
+    // Quando abrir o modal de protocolo, carrega as listas
+    document.getElementById('add-protocolo-btn').addEventListener('click', async ()=>{
+      protocoloForm.reset();
+      await populateEmpresasForProtocolo();
+      await populateEquipamentosForProtocolo(); // sem filtro
+      openModal('add-protocolo-modal');
+    });
+
+    // Ao trocar a empresa, filtra os equipamentos
+    protocoloEmpresaSelect.addEventListener('change', async ()=>{
+      const empresaId = protocoloEmpresaSelect.value || null;
+      await populateEquipamentosForProtocolo(empresaId);
+    });
+
+    // =========================
+    // FORMS / AÇÕES
+    // =========================
+    // Abrir modais restantes
+    document.getElementById('add-empresa-btn').addEventListener('click', ()=>{ empresaForm.reset(); openModal('add-empresa-modal'); });
+    document.getElementById('add-equipamento-btn').addEventListener('click', async ()=>{
+      equipamentoForm.reset(); await populateEmpresasDropdown(); openModal('add-equipamento-modal');
+    });
+
+    // Fechar/Cancelar modais
+    document.getElementById('cancel-empresa-btn').onclick = ()=>closeModal('add-empresa-modal');
+    document.getElementById('close-empresa-modal').onclick = ()=>closeModal('add-empresa-modal');
+
+    document.getElementById('cancel-equipamento-btn').onclick = ()=>closeModal('add-equipamento-modal');
+    document.getElementById('close-equipamento-modal').onclick = ()=>closeModal('add-equipamento-modal');
+
+    document.getElementById('cancel-protocolo-btn').onclick = ()=>closeModal('add-protocolo-modal');
+    document.getElementById('close-protocolo-modal').onclick = ()=>closeModal('add-protocolo-modal');
+
+    document.getElementById('cancel-relatorio-btn').onclick = ()=>closeModal('add-relatorio-modal');
+    document.getElementById('close-relatorio-modal').onclick = ()=>closeModal('add-relatorio-modal');
+
+    document.getElementById('cancel-adendo-btn').onclick = ()=>closeModal('add-adendo-modal');
+    document.getElementById('close-adendo-modal').onclick = ()=>closeModal('add-adendo-modal');
+
+    // Empresa - submit
+    empresaForm.addEventListener("submit", async (e)=>{
+      e.preventDefault();
+      const nome = document.getElementById('empresa-nome').value.trim();
+      const cnpj = document.getElementById('empresa-cnpj').value.trim();
+      const contato = document.getElementById('empresa-contato').value.trim();
+
+      const ref = await addDoc(collection(db, "empresas"), { nome, cnpj, contato, criadoEm: new Date() });
+      await logAudit('create', 'empresa', ref.id, `Empresa criada: ${nome}`);
+      closeModal('add-empresa-modal');
+      await renderEmpresas();
+      await populateEmpresasDropdown();
+      alert("Empresa salva!");
+    });
+
+    // Equipamento - submit (agora salva TAG e MODELO)
+    equipamentoForm.addEventListener("submit", async (e)=>{
+      e.preventDefault();
+      const nome      = document.getElementById('equipamento-nome').value.trim();
+      const empresaId = document.getElementById('equipamento-empresa').value;
+      const tag       = document.getElementById('equipamento-tag').value.trim();
+      const modelo    = document.getElementById('equipamento-modelo').value.trim();
+      const descricao = document.getElementById('equipamento-descricao').value.trim();
+      if (!empresaId) return alert("Selecione uma empresa.");
+
+      const ref = await addDoc(collection(db, "equipamentos"), { nome, empresaId, tag, modelo, descricao, criadoEm: new Date() });
+      await logAudit('create', 'equipamento', ref.id, `Equipamento criado: ${nome} (empresaId=${empresaId}, tag=${tag||'-'}, modelo=${modelo||'-'})`);
+      closeModal('add-equipamento-modal');
+      await renderEquipamentos();
+      alert("Equipamento salvo!");
+    });
+
+    // Protocolo - gerar número
+    document.getElementById('gerar-protocolo-btn').addEventListener('click', ()=>{
+      const tipo = document.getElementById('protocolo-tipo').value;
+      if (!tipo) return alert("Selecione o tipo do protocolo.");
+      const hash = Math.floor(1000 + Math.random()*9000);
+      const ano = new Date().getFullYear();
+      document.getElementById('protocolo-prefixo').value = tipo;
+      document.getElementById('protocolo-hash').value = hash;
+      document.getElementById('protocolo-ano').value = ano;
+    });
+
+    // Protocolo - submit
+    protocoloForm.addEventListener("submit", async (e)=>{
+      e.preventDefault();
+      const tipo = document.getElementById('protocolo-tipo').value;
+      const equipamentoId = document.getElementById('protocolo-equipamento').value;
+      const hash = document.getElementById('protocolo-hash').value;
+      const ano  = document.getElementById('protocolo-ano').value;
+      const descricao = document.getElementById('protocolo-descricao').value.trim();
+
+      if (!tipo || !equipamentoId || !hash || !ano) return alert("Preencha e gere o número do protocolo.");
+      const numero = `${tipo}-${hash}-${ano}`;
+
+      const ref = await addDoc(collection(db, "protocolos"), { tipo, numero, equipamentoId, descricao, criadoEm: new Date() });
+      await logAudit('create', 'protocolo', ref.id, `Protocolo criado: ${numero} (equipamentoId=${equipamentoId})`);
+      closeModal('add-protocolo-modal');
+      await renderProtocolos();
+      alert("Protocolo salvo!");
+    });
+
+    // Relatório - submit (gera numero PROTOCOLO-REL-XXX)
+    document.getElementById('relatorio-form').addEventListener('submit', async (e)=>{
+      e.preventDefault();
+      const protocoloId = document.getElementById('relatorio-protocolo-id').value;
+      const titulo = document.getElementById('relatorio-titulo').value.trim();
+      const conteudo = document.getElementById('relatorio-conteudo').value.trim();
+      if (!protocoloId) return alert("Protocolo não encontrado.");
+
+      const protRef = doc(db, "protocolos", protocoloId);
+      const protSnap = await getDoc(protRef);
+      const protNumero = protSnap.data()?.numero || protocoloId;
+
+      const relsSnap = await getDocs(collection(db, "protocolos", protocoloId, "relatorios"));
+      const seq = (relsSnap.size + 1);
+      const numero = `${protNumero}-REL-${String(seq).padStart(3,'0')}`;
+
+      const ref = await addDoc(collection(db, "protocolos", protocoloId, "relatorios"), {
+        numero, seq, titulo, conteudo, criadoEm: new Date()
+      });
+      await logAudit('create', 'relatorio', ref.id, `Relatório criado: ${numero} (protocoloId=${protocoloId})`);
+
+      closeModal('add-relatorio-modal');
+      const box = document.getElementById(`itens-${protocoloId}`);
+      if (box && !box.classList.contains('hidden')) box.innerHTML = await renderItensProtocolo(protocoloId);
+      alert(`Relatório adicionado: ${numero}`);
+    });
+
+    // Adendo - submit (gera numero PROTOCOLO-ADN-XXX)
+    document.getElementById('adendo-form').addEventListener('submit', async (e)=>{
+      e.preventDefault();
+      const protocoloId = document.getElementById('adendo-protocolo-id').value;
+      const titulo = document.getElementById('adendo-titulo').value.trim();
+      const conteudo = document.getElementById('adendo-conteudo').value.trim();
+      if (!protocoloId) return alert("Protocolo não encontrado.");
+
+      const protRef = doc(db, "protocolos", protocoloId);
+      const protSnap = await getDoc(protRef);
+      const protNumero = protSnap.data()?.numero || protocoloId;
+
+      const adSnap  = await getDocs(collection(db, "protocolos", protocoloId, "adendos"));
+      const seq = (adSnap.size + 1);
+      const numero = `${protNumero}-ADN-${String(seq).padStart(3,'0')}`;
+
+      const ref = await addDoc(collection(db, "protocolos", protocoloId, "adendos"), {
+        numero, seq, titulo, conteudo, criadoEm: new Date()
+      });
+      await logAudit('create', 'adendo', ref.id, `Adendo criado: ${numero} (protocoloId=${protocoloId})`);
+
+      closeModal('add-adendo-modal');
+      const box = document.getElementById(`itens-${protocoloId}`);
+      if (box && !box.classList.contains('hidden')) box.innerHTML = await renderItensProtocolo(protocoloId);
+      alert(`Adendo adicionado: ${numero}`);
+    });
+
+    // ---- UTILS ----
+    function emptyState(text, icon){
+      return `
+        <div class="col-span-full text-center py-12">
+          <i class="fas ${icon} text-4xl text-gray-300 mb-4"></i>
+          <p class="text-gray-500">${text}</p>
+        </div>`;
+    }
+    function formatDate(ts){
+      try{
+        if (!ts) return '—';
+        const date = ts.seconds ? new Date(ts.seconds*1000) : new Date(ts);
+        return date.toLocaleDateString('pt-BR');
+      }catch{ return '—'; }
+    }
+    function formatDateTime(ts){
+      try{
+        if (!ts) return '—';
+        const d = ts.seconds ? new Date(ts.seconds*1000) : new Date(ts);
+        return d.toLocaleDateString('pt-BR') + ' ' + d.toLocaleTimeString('pt-BR', {hour:'2-digit',minute:'2-digit',second:'2-digit'});
+      }catch{ return '—'; }
+    }
+  </script>
+</body>
+</html>
