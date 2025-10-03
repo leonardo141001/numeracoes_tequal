@@ -47,9 +47,8 @@
     </form>
   </div>
 
-  <!-- APP (fica oculto até logar) -->
+  <!-- APP -->
   <div class="main-app hidden">
-    <!-- Header -->
     <header class="bg-gradient-to-r from-primary to-secondary text-white shadow-lg">
       <div class="container mx-auto px-4 py-6 flex flex-col md:flex-row justify-between items-center">
         <div class="flex items-center mb-4 md:mb-0">
@@ -61,7 +60,6 @@
           <button id="equipamentos-tab" class="tab-btn px-4 py-2 rounded-lg font-medium">Equipamentos</button>
           <button id="protocolos-tab" class="tab-btn px-4 py-2 rounded-lg font-medium">Protocolos</button>
           <button id="auditoria-tab" class="tab-btn px-4 py-2 rounded-lg font-medium">Trilha de Auditoria</button>
-          <!-- NOVO: AJUDA -->
           <button id="ajuda-tab" class="tab-btn px-4 py-2 rounded-lg font-medium">Ajuda</button>
           <button id="logout-btn" class="ml-2 text-red-200 hover:text-white">Sair</button>
         </nav>
@@ -124,9 +122,7 @@
                   <th class="px-4 py-3 text-left">Detalhes</th>
                 </tr>
               </thead>
-              <tbody id="auditoria-tbody" class="divide-y divide-gray-100">
-                <!-- linhas dinamicamente -->
-              </tbody>
+              <tbody id="auditoria-tbody" class="divide-y divide-gray-100"></tbody>
             </table>
           </div>
           <div id="auditoria-empty" class="p-8 hidden text-center text-gray-500">
@@ -136,7 +132,7 @@
         <p class="text-xs text-gray-400 mt-3">Mostrando os 200 eventos mais recentes.</p>
       </section>
 
-      <!-- AJUDA / SOBRE (NOVO) -->
+      <!-- AJUDA -->
       <section id="ajuda-section" class="section-content hidden">
         <div class="mb-6">
           <h2 class="text-2xl font-bold text-gray-800">Ajuda & Sobre o Sistema</h2>
@@ -144,19 +140,17 @@
         </div>
 
         <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
-          <!-- O que é -->
           <div class="bg-white rounded-xl shadow-md p-6">
             <h3 class="text-xl font-semibold text-gray-800">O que este sistema faz?</h3>
             <ul class="mt-3 space-y-2 text-gray-700 list-disc pl-5">
               <li><strong>Empresas:</strong> cadastro e visualização de clientes/empreendimentos.</li>
               <li><strong>Equipamentos:</strong> vínculo de equipamentos às empresas, com TAG/Serial e modelo.</li>
-              <li><strong>Protocolos:</strong> criação de números formais (ex.: <code>PQI-1234-2025</code>) e descrição do escopo.</li>
+              <li><strong>Protocolos:</strong> criação de números formais (<code>TIPO-0001-AAAA</code>) e descrição do escopo.</li>
               <li><strong>Relatórios & Adendos:</strong> subitens numerados automaticamente por protocolo.</li>
-              <li><strong>Trilha de Auditoria:</strong> registro de acessos e operações para conformidade.</li>
+              <li><strong>Trilha de Auditoria:</strong> registro de acessos e operações.</li>
             </ul>
           </div>
 
-          <!-- Como usar (passo a passo) -->
           <div class="bg-white rounded-xl shadow-md p-6">
             <h3 class="text-xl font-semibold text-gray-800">Como usar (passo a passo)</h3>
             <ol class="mt-3 space-y-3 text-gray-700 list-decimal pl-5">
@@ -169,34 +163,12 @@
             </ol>
           </div>
 
-          <!-- Dicas rápidas -->
-          <div class="bg-white rounded-xl shadow-md p-6">
-            <h3 class="text-xl font-semibold text-gray-800">Dicas rápidas</h3>
-            <ul class="mt-3 space-y-2 text-gray-700 list-disc pl-5">
-              <li>Os números de <strong>Relatórios</strong> seguem <code>PROTOCOLO-REL-XXX</code> e os de <strong>Adendos</strong> seguem <code>PROTOCOLO-ADN-XXX</code>.</li>
-              <li>Use a tag (patrimônio/serial) para facilitar buscas e rastreabilidade.</li>
-              <li>Ao excluir uma empresa/equipamento, os vínculos não são apagados automaticamente: revise impactos antes.</li>
-              <li>O botão <em>Ver Relatórios/Adendos</em> expande a lista já com numeração gerada.</li>
-            </ul>
-          </div>
-
-          <!-- Perguntas frequentes -->
-          <div class="bg-white rounded-xl shadow-md p-6">
-            <h3 class="text-xl font-semibold text-gray-800">Perguntas frequentes</h3>
-            <div class="mt-3 space-y-3 text-gray-700">
-              <p><strong>Não consigo gerar número do protocolo?</strong><br/>Selecione o <em>Tipo</em> e clique em <em>Gerar Número</em> antes de salvar.</p>
-              <p><strong>Relatório/Adendo não aparece?</strong><br/>Clique em <em>Ver Relatórios/Adendos</em> no cartão do protocolo para atualizar a visualização.</p>
-              <p><strong>Onde vejo quem fez o quê?</strong><br/>Na <em>Trilha de Auditoria</em>, que mostra ação, usuário, data/hora e detalhes.</p>
-            </div>
-          </div>
-
-          <!-- Conformidade -->
           <div class="bg-white rounded-xl shadow-md p-6 lg:col-span-2">
             <h3 class="text-xl font-semibold text-gray-800">Boas práticas & Conformidade</h3>
             <ul class="mt-3 space-y-2 text-gray-700 list-disc pl-5">
-              <li>Mantenha cadastros atualizados (CNPJ, contato, TAG, modelo).</li>
-              <li>Descreva protocolos e relatórios com informações objetivas e auditáveis.</li>
-              <li>Revise a trilha de auditoria periodicamente para conformidade e investigações.</li>
+              <li>Mantenha cadastros atualizados.</li>
+              <li>Descreva protocolos e relatórios de forma objetiva e auditável.</li>
+              <li>Revise a trilha de auditoria periodicamente.</li>
               <li>Use contas individuais; não compartilhe senhas.</li>
             </ul>
           </div>
@@ -204,7 +176,6 @@
       </section>
     </main>
 
-    <!-- RODAPÉ (NOVO) -->
     <footer class="mt-10 border-t border-gray-200">
       <div class="container mx-auto px-4 py-6 text-sm text-gray-500 flex flex-col md:flex-row items-center justify-between">
         <p>© <span id="ano-footer"></span> Gestão de Validação — Todos os direitos reservados.</p>
@@ -262,7 +233,6 @@
         </select>
       </div>
 
-      <!-- NOVOS CAMPOS: TAG e MODELO -->
       <div class="mb-4">
         <label class="block text-gray-700 mb-2" for="equipamento-tag">Tag (Patrimônio/Serial)</label>
         <input id="equipamento-tag" class="w-full px-3 py-2 border rounded-lg" placeholder="Ex.: EQP-00123"/>
@@ -303,7 +273,6 @@
         </select>
       </div>
 
-      <!-- NOVO: filtro por empresa -->
       <div class="mb-4">
         <label class="block text-gray-700 mb-2" for="protocolo-empresa">Empresa</label>
         <select id="protocolo-empresa" class="w-full px-3 py-2 border rounded-lg">
@@ -340,7 +309,7 @@
     </form>
   </div>
 
-  <!-- MODAL: RELATÓRIO (subcoleção) -->
+  <!-- MODAL: RELATÓRIO -->
   <div id="add-relatorio-modal" class="fixed top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 bg-white rounded-xl shadow-2xl p-6 w-11/12 max-w-md z-50 hidden slide-in">
     <div class="flex justify-between items-center mb-4">
       <h3 class="text-xl font-bold text-gray-800">Novo Relatório</h3>
@@ -363,7 +332,7 @@
     </form>
   </div>
 
-  <!-- MODAL: ADENDO (subcoleção) -->
+  <!-- MODAL: ADENDO -->
   <div id="add-adendo-modal" class="fixed top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 bg-white rounded-xl shadow-2xl p-6 w-11/12 max-w-md z-50 hidden slide-in">
     <div class="flex justify-between items-center mb-4">
       <h3 class="text-xl font-bold text-gray-800">Novo Adendo</h3>
@@ -394,7 +363,8 @@
     import { db } from './conect.js';
     import {
       collection, addDoc, getDocs, getDoc, doc, deleteDoc,
-      orderBy, limit, query
+      orderBy, limit, query, where,
+      runTransaction
     } from "https://www.gstatic.com/firebasejs/11.10.0/firebase-firestore.js";
 
     // ---- LOGIN ----
@@ -450,16 +420,13 @@
     const protocoloEquipamentoSelect = document.getElementById('protocolo-equipamento');
     const protocoloEmpresaSelect    = document.getElementById('protocolo-empresa');
 
-    // Auditoria UI
     const auditoriaTbody = document.getElementById('auditoria-tbody');
     const auditoriaEmpty = document.getElementById('auditoria-empty');
 
-    // ---- HELPERS MODAL ----
     const backdrop = document.getElementById("modal-backdrop");
     const openModal = (id) => { document.getElementById(id).classList.remove("hidden"); backdrop.classList.remove("hidden"); }
     const closeModal = (id) => { document.getElementById(id).classList.add("hidden"); backdrop.classList.add("hidden"); }
 
-    // ---- TABS ----
     function setActive(sectionId, tabId){
       document.querySelectorAll(".section-content").forEach(s => s.classList.add("hidden"));
       document.getElementById(sectionId).classList.remove("hidden");
@@ -471,12 +438,8 @@
     document.getElementById("protocolos-tab").addEventListener("click", () => { setActive("protocolos-section","protocolos-tab"); renderProtocolos(); });
     document.getElementById("auditoria-tab").addEventListener("click", () => { setActive("auditoria-section","auditoria-tab"); renderAuditoria(); });
     document.getElementById("refresh-auditoria").addEventListener("click", renderAuditoria);
-    // NOVO: aba Ajuda
-    document.getElementById("ajuda-tab").addEventListener("click", () => {
-      setActive("ajuda-section", "ajuda-tab");
-    });
+    document.getElementById("ajuda-tab").addEventListener("click", () => { setActive("ajuda-section", "ajuda-tab"); });
 
-    // ---- RENDER ALL (primeiro load) ----
     async function renderAll(){
       await renderEmpresas();
       await populateEmpresasDropdown();
@@ -485,7 +448,7 @@
     }
 
     // =========================
-    // AUDITORIA (funções)
+    // AUDITORIA
     // =========================
     async function logAudit(acao, tipo, refId = null, detalhes = ''){
       try{
@@ -675,24 +638,41 @@
     }
 
     // =========================
-    // PROTOCOLOS (+ subcoleções)
+    // PROTOCOLOS
     // =========================
     async function renderProtocolos(filtroEquipamentoId=null){
       protocolosContainer.innerHTML = '';
-      const pSnap = await getDocs(collection(db, "protocolos"));
-      if (pSnap.empty){
+
+      // carrega tudo e ordena no cliente (sem índices compostos)
+      const snap = await getDocs(collection(db, "protocolos"));
+      if (snap.empty){
         protocolosContainer.innerHTML = emptyState("Nenhum protocolo cadastrado", "fa-file-alt");
         return;
       }
 
+      const protList = [];
+      snap.forEach(d => {
+        const p = d.data();
+        p.__id = d.id;
+        protList.push(p);
+      });
+
+      // Ordena: ano desc, tipo asc, seq asc
+      protList.sort((a,b) =>
+        (b.ano||0) - (a.ano||0) ||
+        String(a.tipo||'').localeCompare(String(b.tipo||'')) ||
+        (a.seq||0) - (b.seq||0)
+      );
+
+      // Mapa de equipamentos
       const eqSnap = await getDocs(collection(db, "equipamentos"));
       const eqMap = {};
       eqSnap.forEach(e => eqMap[e.id] = e.data());
 
-      pSnap.forEach(d=>{
-        const p = d.data(); const pId = d.id;
+      protList.forEach(p=>{
         if (filtroEquipamentoId && p.equipamentoId !== filtroEquipamentoId) return;
 
+        const pId = p.__id;
         const numero = p.numero || `${p.tipo || 'TIPO'}-????-${new Date().getFullYear()}`;
         const card = document.createElement('div');
         card.className = "bg-white rounded-xl shadow-md p-6 fade-in";
@@ -758,7 +738,7 @@
       });
     }
 
-    // Renderiza lista de relatórios/adendos com NUMERAÇÃO exibida
+    // Renderiza lista de relatórios/adendos
     async function renderItensProtocolo(protocoloId){
       const relsSnap = await getDocs(collection(db, "protocolos", protocoloId, "relatorios"));
       const adSnap  = await getDocs(collection(db, "protocolos", protocoloId, "adendos"));
@@ -806,7 +786,7 @@
     }
 
     // =========================
-    // LISTAS PARA O MODAL DE PROTOCOLO (EMPRESA + EQUIPAMENTOS)
+    // LISTAS PARA O MODAL DE PROTOCOLO
     // =========================
     async function populateEmpresasForProtocolo() {
       protocoloEmpresaSelect.innerHTML = '<option value="">Todas as empresas</option>';
@@ -821,8 +801,6 @@
 
     async function populateEquipamentosForProtocolo(empresaId = null) {
       protocoloEquipamentoSelect.innerHTML = '<option value="">Selecione um equipamento</option>';
-
-      // map das empresas para mostrar "Equipamento — Empresa"
       const empSnap = await getDocs(collection(db, "empresas"));
       const empMap = {};
       empSnap.forEach(e => empMap[e.id] = e.data()?.nome || '(sem nome)');
@@ -842,30 +820,55 @@
       });
     }
 
-    // Quando abrir o modal de protocolo, carrega as listas
     document.getElementById('add-protocolo-btn').addEventListener('click', async ()=>{
       protocoloForm.reset();
       await populateEmpresasForProtocolo();
-      await populateEquipamentosForProtocolo(); // sem filtro
+      await populateEquipamentosForProtocolo();
       openModal('add-protocolo-modal');
     });
 
-    // Ao trocar a empresa, filtra os equipamentos
     protocoloEmpresaSelect.addEventListener('change', async ()=>{
       const empresaId = protocoloEmpresaSelect.value || null;
       await populateEquipamentosForProtocolo(empresaId);
     });
 
     // =========================
-    // FORMS / AÇÕES
+    // SEQUENCIADOR POR TIPO + ANO
     // =========================
-    // Abrir modais restantes
+    // PREVIEW (não grava)
+    async function peekNextProtocolSequence(tipo, ano) {
+      const key = `${tipo}-${ano}`;
+      const seqRef = doc(db, "sequencias", key);
+      const snap = await getDoc(seqRef);
+      const ultimo = snap.exists() ? (snap.data()?.ultimo || 0) : 0;
+      return ultimo + 1; // apenas visualização
+    }
+
+    // RESERVA (grava de verdade; concorrência-safe)
+    async function getNextProtocolSequence(tipo, ano) {
+      const key = `${tipo}-${ano}`;  // ex.: PQI-2025
+      const seqRef = doc(db, "sequencias", key);
+      return await runTransaction(db, async (tx) => {
+        const snap = await tx.get(seqRef);
+        const atual = snap.exists() ? (snap.data()?.ultimo || 0) : 0;
+        const next = atual + 1;
+        if (!snap.exists()) {
+          tx.set(seqRef, { ultimo: next, atualizadoEm: new Date() });
+        } else {
+          tx.update(seqRef, { ultimo: next, atualizadoEm: new Date() });
+        }
+        return next;
+      });
+    }
+
+    // =========================
+    // AÇÕES / FORMS
+    // =========================
     document.getElementById('add-empresa-btn').addEventListener('click', ()=>{ empresaForm.reset(); openModal('add-empresa-modal'); });
     document.getElementById('add-equipamento-btn').addEventListener('click', async ()=>{
       equipamentoForm.reset(); await populateEmpresasDropdown(); openModal('add-equipamento-modal');
     });
 
-    // Fechar/Cancelar modais
     document.getElementById('cancel-empresa-btn').onclick = ()=>closeModal('add-empresa-modal');
     document.getElementById('close-empresa-modal').onclick = ()=>closeModal('add-empresa-modal');
 
@@ -896,7 +899,7 @@
       alert("Empresa salva!");
     });
 
-    // Equipamento - submit (agora salva TAG e MODELO)
+    // Equipamento - submit
     equipamentoForm.addEventListener("submit", async (e)=>{
       e.preventDefault();
       const nome      = document.getElementById('equipamento-nome').value.trim();
@@ -913,37 +916,63 @@
       alert("Equipamento salvo!");
     });
 
-    // Protocolo - gerar número
-    document.getElementById('gerar-protocolo-btn').addEventListener('click', ()=>{
+    // Protocolo - GERAR: só pré-visualiza (não reserva)
+    document.getElementById('gerar-protocolo-btn').addEventListener('click', async ()=>{
       const tipo = document.getElementById('protocolo-tipo').value;
       if (!tipo) return alert("Selecione o tipo do protocolo.");
-      const hash = Math.floor(1000 + Math.random()*9000);
       const ano = new Date().getFullYear();
-      document.getElementById('protocolo-prefixo').value = tipo;
-      document.getElementById('protocolo-hash').value = hash;
-      document.getElementById('protocolo-ano').value = ano;
+
+      try {
+        const next = await peekNextProtocolSequence(tipo, ano);
+        const seqStr = String(next).padStart(4, '0');
+        document.getElementById('protocolo-prefixo').value = tipo;
+        document.getElementById('protocolo-hash').value    = seqStr; // preview
+        document.getElementById('protocolo-ano').value     = ano;
+      } catch (e) {
+        console.error(e);
+        alert("Não foi possível prever o próximo número. Tente novamente.");
+      }
     });
 
-    // Protocolo - submit
+    // Protocolo - SALVAR: reserva e grava
     protocoloForm.addEventListener("submit", async (e)=>{
       e.preventDefault();
-      const tipo = document.getElementById('protocolo-tipo').value;
+
+      const tipo          = document.getElementById('protocolo-tipo').value;
       const equipamentoId = document.getElementById('protocolo-equipamento').value;
-      const hash = document.getElementById('protocolo-hash').value;
-      const ano  = document.getElementById('protocolo-ano').value;
-      const descricao = document.getElementById('protocolo-descricao').value.trim();
+      const descricao     = document.getElementById('protocolo-descricao').value.trim();
+      if (!tipo || !equipamentoId) return alert("Preencha tipo e equipamento.");
 
-      if (!tipo || !equipamentoId || !hash || !ano) return alert("Preencha e gere o número do protocolo.");
-      const numero = `${tipo}-${hash}-${ano}`;
+      const ano = new Date().getFullYear();
 
-      const ref = await addDoc(collection(db, "protocolos"), { tipo, numero, equipamentoId, descricao, criadoEm: new Date() });
-      await logAudit('create', 'protocolo', ref.id, `Protocolo criado: ${numero} (equipamentoId=${equipamentoId})`);
-      closeModal('add-protocolo-modal');
-      await renderProtocolos();
-      alert("Protocolo salvo!");
+      try {
+        // RESERVA REAL (pode diferir do preview se alguém salvou antes)
+        const seq = await getNextProtocolSequence(tipo, ano);
+        const seqStr = String(seq).padStart(4, '0');
+        const numero = `${tipo}-${seqStr}-${ano}`;
+
+        // refletir no form (opcional)
+        document.getElementById('protocolo-prefixo').value = tipo;
+        document.getElementById('protocolo-hash').value    = seqStr;
+        document.getElementById('protocolo-ano').value     = ano;
+
+        const ref = await addDoc(collection(db, "protocolos"), {
+          tipo, numero, equipamentoId, descricao,
+          seq, ano,
+          criadoEm: new Date()
+        });
+
+        await logAudit('create', 'protocolo', ref.id, `Protocolo criado: ${numero} (equipamentoId=${equipamentoId})`);
+        closeModal('add-protocolo-modal');
+        await renderProtocolos();
+        alert(`Protocolo salvo: ${numero}`);
+      } catch (err) {
+        console.error(err);
+        alert("Falha ao reservar/gravar o número do protocolo. Tente novamente.");
+      }
     });
 
-    // Relatório - submit (gera numero PROTOCOLO-REL-XXX)
+    // Relatório - submit (PROTOCOLO-REL-XXX)
     document.getElementById('relatorio-form').addEventListener('submit', async (e)=>{
       e.preventDefault();
       const protocoloId = document.getElementById('relatorio-protocolo-id').value;
@@ -970,7 +999,7 @@
       alert(`Relatório adicionado: ${numero}`);
     });
 
-    // Adendo - submit (gera numero PROTOCOLO-ADN-XXX)
+    // Adendo - submit (PROTOCOLO-ADN-XXX)
     document.getElementById('adendo-form').addEventListener('submit', async (e)=>{
       e.preventDefault();
       const protocoloId = document.getElementById('adendo-protocolo-id').value;
@@ -1020,7 +1049,6 @@
       }catch{ return '—'; }
     }
 
-    // NOVO: Atualiza ano do rodapé
     document.getElementById('ano-footer').textContent = new Date().getFullYear();
   </script>
 </body>
